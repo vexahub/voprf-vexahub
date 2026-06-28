@@ -13,6 +13,7 @@ use core::ops::Mul;
 use digest::block_api::BlockSizeUser;
 use digest::typenum::{IsLess, IsLessOrEqual, U256};
 use digest::{Digest, FixedOutput, HashMarker, OutputSizeUser};
+use hash2curve::OprfParameters;
 use hybrid_array::ArraySize;
 use hybrid_array::typenum::{IsGreaterOrEqual, Prod, True, U2};
 
@@ -36,4 +37,24 @@ where
     /// The main hash function to use (for HKDF computations and hashing
     /// transcripts).
     type Hash: Digest + BlockSizeUser + Default + FixedOutput + HashMarker;
+}
+
+/// A generic [`CipherSuite`] implementation for any compatible (Group, Hash) pair
+#[allow(dead_code)]
+#[derive(Debug)]
+pub struct Suite<G, H>(core::marker::PhantomData<(G, H)>);
+
+impl<G, H> CipherSuite for Suite<G, H>
+where
+    G: Group + OprfParameters,
+    H: BlockSizeUser + Default + FixedOutput + HashMarker + OutputSizeUser,
+    <G as Group>::SecurityLevel: Mul<U2>,
+    <H as OutputSizeUser>::OutputSize: ArraySize
+        + IsLess<U256>
+        + IsLessOrEqual<<H as BlockSizeUser>::BlockSize, Output = True>
+        + IsGreaterOrEqual<Prod<<G as Group>::SecurityLevel, U2>, Output = True>,
+{
+    const ID: &'static [u8] = G::ID;
+    type Group = G;
+    type Hash = H;
 }

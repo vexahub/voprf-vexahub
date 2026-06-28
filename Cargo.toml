@@ -9,7 +9,7 @@ name = "voprf-vexahub"
 readme = "README.md"
 repository = "https://github.com/facebook/voprf/"
 rust-version = "1.87"
-version = "0.6.0-rc.0"
+version = "0.7.0-pre.0"
 
 [features]
 alloc = []

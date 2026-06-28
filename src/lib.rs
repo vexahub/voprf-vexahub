@@ -566,21 +566,13 @@ mod voprf;
 #[cfg(test)]
 mod tests;
 
+/// A [`CipherSuite`] using P-256 and SHA-256, exposed for doctests.
 #[cfg(feature = "doctest")]
-#[derive(Debug)]
-#[doc(hidden)]
-pub struct P256CipherSuite;
-
-#[cfg(feature = "doctest")]
-impl CipherSuite for P256CipherSuite {
-    const ID: &'static [u8] = b"P256-SHA256";
-    type Group = p256::NistP256;
-    type Hash = sha2::Sha256;
-}
+pub type P256CipherSuite = Suite<p256::NistP256, sha2::Sha256>;
 
 // Exports
 
-pub use crate::ciphersuite::CipherSuite;
+pub use crate::ciphersuite::{CipherSuite, Suite};
 #[cfg(feature = "danger")]
 pub use crate::common::derive_key;
 pub use crate::common::{
